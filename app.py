@@ -92,12 +92,13 @@ def init_db():
         );
     """)
 
-    # si no hay partidos, cargo fixture_2026.csv
+    # Si no hay partidos, cargo el fixture
     cur.execute("SELECT COUNT(*) AS n FROM matches;")
     n = cur.fetchone()["n"]
+    conn.close()
+
     if n == 0:
-        load_fixture_from_csv(cur)
-        conn.commit()
+        load_fixture_from_csv()
 
     conn.close()
 
