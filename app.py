@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "prode.db")
-
+FIXTURE_CSV = os.path.join(BASE_DIR, "fixture_2026.csv")
 
 def get_db_connection():
     """
@@ -26,33 +26,35 @@ def get_db_connection():
 
 
 def load_fixture_from_csv():
-    """
-    Lee el fixture desde fixture_2026.csv.
-    Formato esperado del CSV:
-    group_name,stage,kickoff,home_team,away_team
-    """
-    matches = []
+    import csv
     if not os.path.exists(FIXTURE_CSV):
         print(f"⚠️ No se encontró {FIXTURE_CSV}, se cargarán partidos de ejemplo.")
-        matches = [
-            ("Group A", "Group Stage", "2026-06-11 16:00", "Mexico", "South Africa", None, None),
-            ("Group A", "Group Stage", "2026-06-11 23:00", "South Korea", "TBD", None, None),
-            ("Group J", "Group Stage", "2026-06-16 22:00", "Argentina", "Algeria", None, None),
-        ]
-        return matches
+        # acá insertás partidos de ejemplo en la tabla matches
+        return
+
+    conn = get_db_connection()
+    cur = conn.cursor()
 
     with open(FIXTURE_CSV, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            group_name = row.get("group_name", "").strip() or None
-            stage = row.get("stage", "").strip() or "Group Stage"
-            kickoff = row["kickoff"].strip()
-            home_team = row["home_team"].strip()
-            away_team = row["away_team"].strip()
-            if home_team and away_team and kickoff:
-                matches.append((group_name, stage, kickoff, home_team, away_team, None, None))
+            # acá hacés el INSERT en matches usando las columnas del CSV
+            cur.execute(
+                """
+                INSERT INTO matches (group_name, stage, kickoff, home_team, away_team)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    row["group_name"],
+                    row["stage"],
+                    row["kickoff"],
+                    row["home_team"],
+                    row["away_team"],
+                ),
+            )
 
-    return matches
+    conn.commit()
+    conn.close()
 
 
 def init_db():
