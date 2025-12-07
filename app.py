@@ -688,11 +688,27 @@ def admin_edit_match(match_id):
     conn.close()
     return render_template("admin_edit_match.html", match=match, error=error)
 
+@app.before_first_request
+def initialize_database():
+    """
+    Esto se ejecuta una sola vez cuando llega el primer request
+    (funciona en Render con gunicorn).
+    """
+    try:
+        print("🔧 Inicializando base de datos en before_first_request...")
+        init_db()
+        ensure_pool_tables()
+        print("✅ Base de datos lista.")
+    except Exception as e:
+        print("❌ Error inicializando la base:", e)
+
+
 
 # -----------------------------
 # Main
 # -----------------------------
+init_db()
+ensure_pool_tables()
+
 if __name__ == "__main__":
-    init_db()
-    ensure_pool_tables()
     app.run(debug=True)
