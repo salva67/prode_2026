@@ -6,16 +6,20 @@ import string
 import random
 
 
-DB_PATH = "prode.db"
-FIXTURE_CSV = "fixture_2026.csv"
-
 app = Flask(__name__)
 
+# ============================
+# CONFIG DB: archivo prode.db
+# ============================
 
-# -----------------------------
-# Conexión y setup de la base
-# -----------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "prode.db")
+
+
 def get_db_connection():
+    """
+    Abre (o crea) el archivo prode.db en la misma carpeta que app.py
+    """
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -52,95 +56,66 @@ def load_fixture_from_csv():
 
 
 def init_db():
-    """Crea la base y carga el fixture la primera vez."""
-    if os.path.exists(DB_PATH):
-        return
-
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Usuarios (simple: nombre único)
-    cur.execute(
-        """
-        CREATE TABLE users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id   INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE
         );
-        """
-    )
+    """)
 
-    # Partidos
-    cur.execute(
-        """
-        CREATE TABLE matches (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS matches (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
             group_name TEXT,
-            stage TEXT,
-            kickoff TEXT NOT NULL,
-            home_team TEXT NOT NULL,
-            away_team TEXT NOT NULL,
+            stage      TEXT NOT NULL,
+            kickoff    TEXT NOT NULL,
+            home_team  TEXT NOT NULL,
+            away_team  TEXT NOT NULL,
             home_score INTEGER,
             away_score INTEGER
         );
-        """
-    )
+    """)
 
-    # Pronósticos
-    cur.execute(
-        """
-        CREATE TABLE predictions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            match_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            home_pred INTEGER NOT NULL,
-            away_pred INTEGER NOT NULL,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(match_id, user_id),
-            FOREIGN KEY(match_id) REFERENCES matches(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS predictions (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id    INTEGER NOT NULL,
+            match_id   INTEGER NOT NULL,
+            home_pred  INTEGER NOT NULL,
+            away_pred  INTEGER NOT NULL,
+            UNIQUE(user_id, match_id),
+            FOREIGN KEY(user_id) REFERENCES users(id),
+            FOREIGN KEY(match_id) REFERENCES matches(id)
         );
-        """
-    )
+    """)
 
-    # Cargar fixture
-    matches = load_fixture_from_csv()
-    cur.executemany(
-        """
-        INSERT INTO matches (group_name, stage, kickoff, home_team, away_team, home_score, away_score)
-        VALUES (?, ?, ?, ?, ?, ?, ?);
-        """,
-        matches,
-    )
+    # si no hay partidos, cargo fixture_2026.csv
+    cur.execute("SELECT COUNT(*) AS n FROM matches;")
+    n = cur.fetchone()["n"]
+    if n == 0:
+        load_fixture_from_csv(cur)
+        conn.commit()
 
-    conn.commit()
     conn.close()
-    print("✅ Base creada y fixture cargado.")
 
 
 def ensure_pool_tables():
-    """
-    Crea las tablas de ligas (pools) si no existen.
-    Se llama siempre al arrancar la app, incluso si la DB ya existía.
-    """
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Tabla de ligas
-    cur.execute(
-        """
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS pools (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             code TEXT NOT NULL UNIQUE,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         );
-        """
-    )
+    """)
 
-    # Miembros de las ligas
-    cur.execute(
-        """
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS pool_members (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             pool_id INTEGER NOT NULL,
@@ -151,8 +126,7 @@ def ensure_pool_tables():
             FOREIGN KEY(pool_id) REFERENCES pools(id),
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
-        """
-    )
+    """)
 
     conn.commit()
     conn.close()
@@ -688,20 +662,18 @@ def admin_edit_match(match_id):
     conn.close()
     return render_template("admin_edit_match.html", match=match, error=error)
 
-@app.before_first_request
-def initialize_database():
-    """
-    Esto se ejecuta una sola vez cuando llega el primer request
-    (funciona en Render con gunicorn).
-    """
-    try:
-        print("🔧 Inicializando base de datos en before_first_request...")
-        init_db()
-        ensure_pool_tables()
-        print("✅ Base de datos lista.")
-    except Exception as e:
-        print("❌ Error inicializando la base:", e)
 
+# ============================
+# INICIALIZACIÓN DB AL IMPORTAR
+# ============================
+
+try:
+    print("🔧 init_db() y ensure_pool_tables() al importar app.py")
+    init_db()
+    ensure_pool_tables()
+    print("✅ DB inicializada correctamente.")
+except Exception as e:
+    print("❌ Error inicializando DB al importar:", e)
 
 
 # -----------------------------
