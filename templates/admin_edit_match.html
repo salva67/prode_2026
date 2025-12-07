@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Editar resultado - Prode 2026{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Cargar resultado real</h5>
+
+          <p class="mb-1">
+            <strong>{{ match.home_team }}</strong>
+            <span class="text-muted">vs</span>
+            <strong>{{ match.away_team }}</strong>
+          </p>
+          <p class="text-muted small mb-3">Fecha/Hora: {{ match.kickoff }}</p>
+
+          {% if error %}
+            <div class="alert alert-danger py-2">{{ error }}</div>
+          {% endif %}
+
+          <form method="post" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Goles {{ match.home_team }}</label>
+              <input
+                type="number"
+                name="home_score"
+                class="form-control"
+                value="{% if match.home_score is not none %}{{ match.home_score }}{% endif %}"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Goles {{ match.away_team }}</label>
+              <input
+                type="number"
+                name="away_score"
+                class="form-control"
+                value="{% if match.away_score is not none %}{{ match.away_score }}{% endif %}"
+                required
+              />
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Guardar resultado</button>
+              <a href="{{ url_for('admin_matches') }}" class="btn btn-outline-secondary">Volver</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

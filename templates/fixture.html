@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Fixture - Prode 2026{% endblock %}
+
+{% block content %}
+  <!-- Header con jugador y progreso -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+  <div>
+    <h2 class="mb-1">Fixture</h2>
+    <p class="mb-0 text-muted">
+      Jugando como <strong>{{ user.name }}</strong>
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('pools', user_id=user.id) }}" class="btn btn-sm btn-outline-primary">
+      Mis ligas
+    </a>
+    <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-light">
+      Cambiar de usuario
+    </a>
+  </div>
+</div>
+
+
+  <!-- Panel de progreso -->
+  <div class="card shadow-soft mb-4">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <h5 class="card-title mb-2">Progreso de tus pronósticos</h5>
+          <div class="mb-1">
+            <small class="text-muted">
+              {{ stats.n_pred }} de {{ stats.n_matches }} partidos pronosticados
+            </small>
+          </div>
+          <div class="progress" style="height: 10px;">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              style="width: {{ stats.completion_pct }}%;"
+              aria-valuenow="{{ stats.completion_pct }}"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="fw-bold">{{ stats.n_played }}</div>
+              <div class="small text-muted">Jugados</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold">{{ stats.n_scored }}</div>
+              <div class="small text-muted">Con puntos</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold">{{ stats.completion_pct }}%</div>
+              <div class="small text-muted">Completado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros interactivos -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="btn-group btn-group-sm" role="group" aria-label="Filtros de partidos">
+      <button type="button" class="btn btn-outline-light active" data-filter="all">
+        Todos
+      </button>
+      <button type="button" class="btn btn-outline-light" data-filter="pending">
+        Pendientes
+      </button>
+      <button type="button" class="btn btn-outline-light" data-filter="predicted">
+        Pronosticados
+      </button>
+      <button type="button" class="btn btn-outline-light" data-filter="played">
+        Jugados
+      </button>
+    </div>
+    <small class="text-muted d-none d-md-inline">
+      Tip: usá los filtros para concentrarte en lo que te falta cargar.
+    </small>
+  </div>
+
+  <!-- Tabla de fixture -->
+  {% if matches %}
+    <div class="table-responsive shadow-soft rounded-4">
+      <table class="table table-sm table-striped table-hover align-middle bg-white">
+        <thead class="table-light">
+          <tr>
+            <th>Grupo</th>
+            <th>Fase</th>
+            <th>Fecha/Hora</th>
+            <th>Partido</th>
+            <th>Estado</th>
+            <th>Resultado real</th>
+            <th>Tu pronóstico</th>
+            <th>Puntos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in matches %}
+            <tr
+              class="{% if m.status == 'Jugado' %}table-success{% elif m.has_prediction %}table-warning-subtle{% endif %}"
+              data-status="{{ m.status }}"
+              data-has-pred="{{ 1 if m.has_prediction else 0 }}"
+            >
+              <td>{{ m.group_name or "-" }}</td>
+              <td>{{ m.stage }}</td>
+              <td><span class="small text-muted">{{ m.kickoff }}</span></td>
+              <td>
+                <strong>{{ m.home_team }}</strong>
+                <span class="text-muted">vs</span>
+                <strong>{{ m.away_team }}</strong>
+              </td>
+              <td>
+                {% if m.status == 'Jugado' %}
+                  <span class="badge bg-success">Jugado</span>
+                {% else %}
+                  <span class="badge bg-secondary">Pendiente</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if m.home_score is not none and m.away_score is not none %}
+                  {{ m.home_score }} - {{ m.away_score }}
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if m.home_pred is not none and m.away_pred is not none %}
+                  {{ m.home_pred }} - {{ m.away_pred }}
+                {% else %}
+                  <span class="text-muted">Sin cargar</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if m.points is none %}
+                  <span class="points-pill points-pill-na">-</span>
+                {% else %}
+                  {% if m.points >= 5 %}
+                    <span class="points-pill points-pill-max">{{ m.points }}</span>
+                  {% elif m.points >= 3 %}
+                    <span class="points-pill points-pill-good">{{ m.points }}</span>
+                  {% else %}
+                    <span class="points-pill points-pill-low">{{ m.points }}</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a
+                  href="{{ url_for('predict', match_id=m.match_id, user_id=user.id) }}"
+                  class="btn btn-sm {% if m.has_prediction %}btn-outline-primary{% else %}btn-primary{% endif %}"
+                >
+                  {% if m.has_prediction %}Editar{% else %}Pronosticar{% endif %}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay partidos cargados.</p>
+  {% endif %}
+
+  <!-- Script de filtros (interactividad en front) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll("[data-filter]");
+      const rows = document.querySelectorAll("tbody tr[data-status]");
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const filter = btn.dataset.filter;
+
+          // toggle estado activo del botón
+          buttons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          rows.forEach((row) => {
+            const status = row.dataset.status; // "Pendiente" o "Jugado"
+            const hasPred = row.dataset.hasPred; // "0" o "1"
+            let show = true;
+
+            if (filter === "pending") {
+              show = status === "Pendiente";
+            } else if (filter === "predicted") {
+              show = hasPred === "1";
+            } else if (filter === "played") {
+              show = status === "Jugado";
+            } // "all" muestra todo
+
+            row.style.display = show ? "" : "none";
+          });
+        });
+      });
+    });
+  </script>
+{% endblock %}

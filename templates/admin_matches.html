@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Partidos - Prode 2026{% endblock %}
+
+{% block content %}
+  <h2 class="mb-3">Admin · Partidos</h2>
+  <p class="text-muted">
+    Desde acá cargás los resultados reales. Esto actualiza los puntos del ranking.
+  </p>
+
+  {% if matches %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped table-hover bg-white shadow-sm align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Grupo</th>
+            <th>Fase</th>
+            <th>Fecha/Hora</th>
+            <th>Partido</th>
+            <th>Resultado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in matches %}
+            <tr>
+              <td>{{ m.id }}</td>
+              <td>{{ m.group_name or "-" }}</td>
+              <td>{{ m.stage }}</td>
+              <td><span class="small text-muted">{{ m.kickoff }}</span></td>
+              <td>{{ m.home_team }} vs {{ m.away_team }}</td>
+              <td>
+                {% if m.home_score is not none and m.away_score is not none %}
+                  {{ m.home_score }} - {{ m.away_score }}
+                {% else %}
+                  <span class="text-muted">Sin cargar</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a
+                  href="{{ url_for('admin_edit_match', match_id=m.id) }}"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  Cargar / editar
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay partidos.</p>
+  {% endif %}
+{% endblock %}

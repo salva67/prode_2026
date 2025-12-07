@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Mis ligas - Prode 2026{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+    <div>
+      <h2 class="mb-1">Mis ligas</h2>
+      <p class="mb-0 text-muted">
+        Jugador: <strong>{{ user.name }}</strong>
+      </p>
+    </div>
+    <div class="text-md-end">
+      <a href="{{ url_for('fixture', user_id=user.id) }}" class="btn btn-sm btn-outline-light">
+        Volver al fixture
+      </a>
+    </div>
+  </div>
+
+  {% if message %}
+    <div class="alert alert-{{ message_type }} py-2">{{ message }}</div>
+  {% endif %}
+
+  <div class="row g-3">
+    <!-- Ligas del usuario -->
+    <div class="col-md-7">
+      <div class="card shadow-soft mb-3">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Ligas donde jugás</h5>
+          {% if pools %}
+            <ul class="list-group list-group-flush">
+              {% for p in pools %}
+                <li class="list-group-item bg-transparent border-secondary text-light d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold">{{ p.name }}</div>
+                    <div class="small text-muted">
+                      Código: <code>{{ p.code }}</code>
+                      · Rol: {{ p.role }}
+                    </div>
+                  </div>
+                  <a
+                    href="{{ url_for('pool_ranking', pool_id=p.id, user_id=user.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    Ver ranking
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="mb-0 text-muted">
+              Todavía no estás en ninguna liga. Creá una o sumate con un código.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Crear / unirse -->
+    <div class="col-md-5">
+      <div class="card shadow-soft mb-3">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Crear una nueva liga</h5>
+          <form method="post">
+            <input type="hidden" name="action" value="create" />
+            <div class="mb-3">
+              <label class="form-label">Nombre de la liga</label>
+              <input
+                type="text"
+                name="pool_name"
+                class="form-control"
+                placeholder="Ej: Amigos del laburo"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Crear liga</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card shadow-soft">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Unirse a una liga con código</h5>
+          <form method="post">
+            <input type="hidden" name="action" value="join" />
+            <div class="mb-3">
+              <label class="form-label">Código de liga</label>
+              <input
+                type="text"
+                name="code"
+                class="form-control"
+                placeholder="Ej: A7K3QZ"
+                style="text-transform: uppercase;"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-outline-primary w-100">Unirme</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

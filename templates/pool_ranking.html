@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Ranking {{ pool.name }} - Prode 2026{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+    <div>
+      <h2 class="mb-1">Ranking liga: {{ pool.name }}</h2>
+      <p class="mb-0 text-muted">
+        Código: <code>{{ pool.code }}</code>
+      </p>
+    </div>
+    <div class="text-md-end">
+      {% if user_id %}
+        <a href="{{ url_for('pools', user_id=user_id) }}" class="btn btn-sm btn-outline-light">
+          Volver a mis ligas
+        </a>
+      {% else %}
+        <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-light">
+          Volver al inicio
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if ranking %}
+    <div class="table-responsive shadow-soft rounded-4">
+      <table class="table table-striped table-hover bg-white align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in ranking %}
+            <tr>
+              <td>
+                {% if loop.index == 1 %}
+                  🥇
+                {% elif loop.index == 2 %}
+                  🥈
+                {% elif loop.index == 3 %}
+                  🥉
+                {% else %}
+                  {{ loop.index }}
+                {% endif %}
+              </td>
+              <td>{{ row.user_name }}</td>
+              <td>
+                <span class="points-pill points-pill-good">{{ row.points }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted">
+      Todavía no hay puntos en esta liga. Cargá resultados reales y pronósticos para que se arme el ranking.
+    </p>
+  {% endif %}
+{% endblock %}

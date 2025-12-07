@@ -1,0 +1,105 @@
+group_name,stage,kickoff,home_team,away_team
+Group A,Group Stage,2026-06-11 16:00,Mexico,South Africa
+Group A,Group Stage,2026-06-11 23:00,South Korea,TBD
+Group B,Group Stage,2026-06-12 16:00,Canada,TBD
+Group D,Group Stage,2026-06-12 22:00,USA,Paraguay
+Group D,Group Stage,2026-06-13 01:00,Australia,TBD
+Group B,Group Stage,2026-06-13 16:00,Qatar,Switzerland
+Group C,Group Stage,2026-06-13 19:00,Brazil,Morocco
+Group C,Group Stage,2026-06-13 22:00,Haiti,Scotland
+Group E,Group Stage,2026-06-14 14:00,Germany,Curaçao
+Group F,Group Stage,2026-06-14 17:00,Netherlands,Japan
+Group E,Group Stage,2026-06-14 20:00,Ivory Coast,Ecuador
+Group F,Group Stage,2026-06-14 23:00,TBD,Tunisia
+Group H,Group Stage,2026-06-15 13:00,Spain,Cape Verde
+Group G,Group Stage,2026-06-15 16:00,Belgium,Egypt
+Group H,Group Stage,2026-06-15 19:00,Saudi Arabia,Uruguay
+Group G,Group Stage,2026-06-15 22:00,Iran,New Zealand
+Group J,Group Stage,2026-06-16 01:00,Austria,Jordan
+Group I,Group Stage,2026-06-16 16:00,France,Senegal
+Group I,Group Stage,2026-06-16 19:00,TBD,Norway
+Group J,Group Stage,2026-06-16 22:00,Argentina,Algeria
+Group K,Group Stage,2026-06-17 14:00,Portugal,TBD
+Group L,Group Stage,2026-06-17 17:00,England,Croatia
+Group L,Group Stage,2026-06-17 20:00,Ghana,Panama
+Group K,Group Stage,2026-06-17 23:00,Uzbekistan,Colombia
+Group A,Group Stage,2026-06-18 13:00,TBD,South Africa
+Group B,Group Stage,2026-06-18 16:00,Switzerland,TBD
+Group B,Group Stage,2026-06-18 19:00,Canada,Qatar
+Group A,Group Stage,2026-06-18 22:00,Mexico,South Korea
+Group D,Group Stage,2026-06-19 01:00,TBD,Paraguay
+Group D,Group Stage,2026-06-19 16:00,USA,Australia
+Group C,Group Stage,2026-06-19 19:00,Scotland,Morocco
+Group C,Group Stage,2026-06-19 22:00,Brazil,Haiti
+Group F,Group Stage,2026-06-20 01:00,Tunisia,Japan
+Group F,Group Stage,2026-06-20 14:00,Netherlands,TBD
+Group E,Group Stage,2026-06-20 17:00,Germany,Ivory Coast
+Group E,Group Stage,2026-06-20 21:00,Ecuador,Curaçao
+Group H,Group Stage,2026-06-21 13:00,Spain,Saudi Arabia
+Group G,Group Stage,2026-06-21 16:00,Belgium,Iran
+Group H,Group Stage,2026-06-21 19:00,Uruguay,Cape Verde
+Group G,Group Stage,2026-06-21 22:00,New Zealand,Egypt
+Group J,Group Stage,2026-06-22 14:00,Argentina,Austria
+Group I,Group Stage,2026-06-22 18:00,France,TBD
+Group I,Group Stage,2026-06-22 21:00,Norway,Senegal
+Group J,Group Stage,2026-06-23 00:00,Jordan,Algeria
+Group K,Group Stage,2026-06-23 14:00,Portugal,Uzbekistan
+Group L,Group Stage,2026-06-23 17:00,England,Ghana
+Group L,Group Stage,2026-06-23 20:00,Panama,Croatia
+Group K,Group Stage,2026-06-23 23:00,Colombia,TBD
+Group B,Group Stage,2026-06-24 16:00,Switzerland,Canada
+Group B,Group Stage,2026-06-24 16:00,TBD,Qatar
+Group C,Group Stage,2026-06-24 19:00,Morocco,Haiti
+Group C,Group Stage,2026-06-24 19:00,Scotland,Brazil
+Group A,Group Stage,2026-06-24 22:00,South Africa,South Korea
+Group A,Group Stage,2026-06-24 22:00,TBD,Mexico
+Group E,Group Stage,2026-06-25 17:00,Curaçao,Ivory Coast
+Group E,Group Stage,2026-06-25 17:00,Ecuador,Germany
+Group F,Group Stage,2026-06-25 20:00,Tunisia,Netherlands
+Group F,Group Stage,2026-06-25 20:00,Japan,TBD
+Group D,Group Stage,2026-06-25 23:00,TBD,USA
+Group D,Group Stage,2026-06-25 23:00,Paraguay,Australia
+Group I,Group Stage,2026-06-26 16:00,Norway,France
+Group I,Group Stage,2026-06-26 16:00,Senegal,TBD
+Group H,Group Stage,2026-06-26 21:00,Cape Verde,Saudi Arabia
+Group H,Group Stage,2026-06-26 21:00,Uruguay,Spain
+Group G,Group Stage,2026-06-27 00:00,New Zealand,Belgium
+Group G,Group Stage,2026-06-27 00:00,Egypt,Iran
+Group L,Group Stage,2026-06-27 18:00,Panama,England
+Group L,Group Stage,2026-06-27 18:00,Croatia,Ghana
+Group K,Group Stage,2026-06-27 20:30,Colombia,Portugal
+Group K,Group Stage,2026-06-27 20:30,TBD,Uzbekistan
+Group J,Group Stage,2026-06-27 23:00,Algeria,Austria
+Group J,Group Stage,2026-06-27 23:00,Jordan,Argentina
+,Round of 32,2026-06-28 16:00,TBD,TBD
+,Round of 32,2026-06-29 14:00,TBD,TBD
+,Round of 32,2026-06-29 17:30,TBD,TBD
+,Round of 32,2026-06-29 22:00,TBD,TBD
+,Round of 32,2026-06-30 14:00,TBD,TBD
+,Round of 32,2026-06-30 18:00,TBD,TBD
+,Round of 32,2026-06-30 22:00,TBD,TBD
+,Round of 32,2026-07-01 13:00,TBD,TBD
+,Round of 32,2026-07-01 17:00,TBD,TBD
+,Round of 32,2026-07-01 21:00,TBD,TBD
+,Round of 32,2026-07-02 16:00,TBD,TBD
+,Round of 32,2026-07-02 20:00,TBD,TBD
+,Round of 32,2026-07-02 22:30,TBD,TBD
+,Round of 32,2026-07-03 00:00,TBD,TBD
+,Round of 32,2026-07-03 15:00,TBD,TBD
+,Round of 32,2026-07-03 19:00,TBD,TBD
+,Round of 16,2026-07-04 14:00,TBD,TBD
+,Round of 16,2026-07-04 18:00,TBD,TBD
+,Round of 16,2026-07-05 17:00,TBD,TBD
+,Round of 16,2026-07-05 21:00,TBD,TBD
+,Round of 16,2026-07-06 16:00,TBD,TBD
+,Round of 16,2026-07-06 21:00,TBD,TBD
+,Round of 16,2026-07-07 13:00,TBD,TBD
+,Round of 16,2026-07-07 17:00,TBD,TBD
+,Quarter-finals,2026-07-09 17:00,TBD,TBD
+,Quarter-finals,2026-07-10 16:00,TBD,TBD
+,Quarter-finals,2026-07-11 18:00,TBD,TBD
+,Quarter-finals,2026-07-11 22:00,TBD,TBD
+,Semi-finals,2026-07-14 16:00,TBD,TBD
+,Semi-finals,2026-07-15 16:00,TBD,TBD
+,Third place play-off,2026-07-18 18:00,TBD,TBD
+,Final,2026-07-19 16:00,TBD,TBD

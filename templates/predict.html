@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Pronóstico - Prode 2026{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Cargar pronóstico</h5>
+          <p class="mb-1">Jugador: <strong>{{ user.name }}</strong></p>
+          <p class="mb-1">
+            Partido:
+            <strong>{{ match.home_team }}</strong>
+            <span class="text-muted">vs</span>
+            <strong>{{ match.away_team }}</strong>
+          </p>
+          <p class="text-muted small mb-3">Fecha/Hora: {{ match.kickoff }}</p>
+
+          {% if error %}
+            <div class="alert alert-danger py-2">{{ error }}</div>
+          {% endif %}
+
+          <form method="post" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Goles {{ match.home_team }}</label>
+              <input
+                type="number"
+                name="home_pred"
+                class="form-control"
+                value="{% if prediction %}{{ prediction.home_pred }}{% endif %}"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Goles {{ match.away_team }}</label>
+              <input
+                type="number"
+                name="away_pred"
+                class="form-control"
+                value="{% if prediction %}{{ prediction.away_pred }}{% endif %}"
+                required
+              />
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Guardar pronóstico</button>
+              <a href="{{ url_for('fixture', user_id=user.id) }}" class="btn btn-outline-secondary">
+                Volver al fixture
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

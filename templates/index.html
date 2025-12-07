@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Prode 2026{% endblock %}
+
+{% block content %}
+  <div class="row mb-4">
+    <!-- Stats -->
+    <div class="col-md-8 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Resumen del prode</h5>
+          <div class="row text-center mt-3">
+            <div class="col-4">
+              <div class="fw-bold fs-4">{{ stats.n_users or 0 }}</div>
+              <div class="text-muted">Usuarios</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold fs-4">{{ stats.n_matches or 0 }}</div>
+              <div class="text-muted">Partidos</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold fs-4">{{ stats.n_predictions or 0 }}</div>
+              <div class="text-muted">Pronósticos</div>
+            </div>
+          </div>
+          <p class="mt-3 mb-0 text-muted">
+            Creá tu usuario, entrá al fixture y cargá tus resultados para todo el Mundial 2026.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crear usuario -->
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Crear / entrar</h5>
+          <form method="post">
+            <div class="mb-3">
+              <label class="form-label">Nombre de jugador</label>
+              <input type="text" name="name" class="form-control" required />
+              <div class="form-text">Ej: Salva, Nico, Equipo 1...</div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              Entrar al prode
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de usuarios -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Usuarios existentes</h5>
+      {% if users %}
+        <ul class="list-group list-group-flush">
+          {% for u in users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ u.name }}</span>
+              <a href="{{ url_for('fixture', user_id=u.id) }}" class="btn btn-sm btn-outline-primary">
+                Jugar como {{ u.name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="mb-0 text-muted">Todavía no hay usuarios cargados.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
