@@ -665,6 +665,109 @@ def admin_edit_match(match_id):
     conn.close()
     return render_template("admin_edit_match.html", match=match, error=error)
 
+def compute_group_standings():
+    """
+    Calcula tablas de posiciones por grupo en base a los resultados reales
+    (home_score / away_score) de la fase de grupos.
+    Devuelve un dict: { group_name: [ {team, played, wins, draws, losses, gf, ga, gd, points}, ... ] }
+    """
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    rows = cur.execute(
+        """
+        SELECT
+            group_name,
+            home_team,
+            away_team,
+            home_score,
+            away_score
+        FROM matches
+        WHERE group_name IS NOT NULL
+          AND home_score IS NOT NULL
+          AND away_score IS NOT NULL
+        ORDER BY kickoff;
+        """
+    ).fetchall()
+    conn.close()
+
+    standings = {}
+
+    for r in rows:
+        group = r["group_name"]
+        if group not in standings:
+            standings[group] = {}
+
+        home = r["home_team"]
+        away = r["away_team"]
+        hs   = r["home_score"]
+        as_  = r["away_score"]
+
+        # Inicializar equipos si no existen
+        for team in (home, away):
+            if team not in standings[group]:
+                standings[group][team] = {
+                    "team": team,
+                    "played": 0,
+                    "wins": 0,
+                    "draws": 0,
+                    "losses": 0,
+                    "gf": 0,
+                    "ga": 0,
+                    "gd": 0,
+                    "points": 0,
+                }
+
+        # Actualizar PJ, GF, GC
+        standings[group][home]["played"] += 1
+        standings[group][away]["played"] += 1
+
+        standings[group][home]["gf"] += hs
+        standings[group][home]["ga"] += as_
+        standings[group][away]["gf"] += as_
+        standings[group][away]["ga"] += hs
+
+        # Resultado
+        if hs > as_:
+            # gana local
+            standings[group][home]["wins"] += 1
+            standings[group][home]["points"] += 3
+            standings[group][away]["losses"] += 1
+        elif hs < as_:
+            # gana visitante
+            standings[group][away]["wins"] += 1
+            standings[group][away]["points"] += 3
+            standings[group][home]["losses"] += 1
+        else:
+            # empate
+            standings[group][home]["draws"] += 1
+            standings[group][away]["draws"] += 1
+            standings[group][home]["points"] += 1
+            standings[group][away]["points"] += 1
+
+    # Calcular DG y ordenar equipos dentro de cada grupo
+    groups_sorted = {}
+    for group, teams_dict in standings.items():
+        teams_list = []
+        for t in teams_dict.values():
+            t["gd"] = t["gf"] - t["ga"]
+            teams_list.append(t)
+
+        # Orden: puntos DESC, DG DESC, GF DESC, nombre ASC
+        teams_list.sort(
+            key=lambda x: (-x["points"], -x["gd"], -x["gf"], x["team"])
+        )
+        groups_sorted[group] = teams_list
+
+    return groups_sorted
+
+@app.route("/standings")
+def standings():
+    """
+    Vista de tablas de posiciones por grupo (en base a resultados reales).
+    """
+    groups = compute_group_standings()
+    return render_template("standings.html", groups=groups)
 
 # ============================
 # INICIALIZACIÓN DB AL IMPORTAR

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Tablas de posiciones - Prode 2026{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+    <div>
+      <h2 class="mb-1">Tablas de posiciones</h2>
+      <p class="mb-0 text-muted">
+        Calculadas con los <strong>resultados reales</strong> de la fase de grupos.
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-light">
+        Inicio
+      </a>
+    </div>
+  </div>
+
+  {% if groups %}
+    <div class="row g-3">
+      {% for group_name, teams in groups.items() %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-soft h-100">
+            <div class="card-header bg-gradient-info text-white d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Grupo {{ group_name }}</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0 align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th>Equipo</th>
+                      <th class="text-center">PJ</th>
+                      <th class="text-center">G</th>
+                      <th class="text-center">E</th>
+                      <th class="text-center">P</th>
+                      <th class="text-center">GF</th>
+                      <th class="text-center">GC</th>
+                      <th class="text-center">DG</th>
+                      <th class="text-center">Pts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for t in teams %}
+                      <tr>
+                        <td class="text-center">
+                          {% if loop.index == 1 %}
+                            🟢
+                          {% elif loop.index == 2 %}
+                            🟢
+                          {% else %}
+                            {{ loop.index }}
+                          {% endif %}
+                        </td>
+                        <td>{{ t.team }}</td>
+                        <td class="text-center">{{ t.played }}</td>
+                        <td class="text-center">{{ t.wins }}</td>
+                        <td class="text-center">{{ t.draws }}</td>
+                        <td class="text-center">{{ t.losses }}</td>
+                        <td class="text-center">{{ t.gf }}</td>
+                        <td class="text-center">{{ t.ga }}</td>
+                        <td class="text-center">
+                          {% if t.gd > 0 %}
+                            +{{ t.gd }}
+                          {% else %}
+                            {{ t.gd }}
+                          {% endif %}
+                        </td>
+                        <td class="text-center fw-semibold">{{ t.points }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">
+      Todavía no hay resultados cargados en la fase de grupos. Entrá al panel de admin y cargá algunos scores.
+    </p>
+  {% endif %}
+{% endblock %}

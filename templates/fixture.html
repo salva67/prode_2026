@@ -4,14 +4,10 @@
 
 {% block content %}
   <!-- Header con jugador y progreso -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-  <div>
-    <h2 class="mb-1">Fixture</h2>
-    <p class="mb-0 text-muted">
-      Jugando como <strong>{{ user.name }}</strong>
-    </p>
-  </div>
-  <div class="d-flex gap-2">
+    <div class="d-flex gap-2">
+    <a href="{{ url_for('standings') }}" class="btn btn-sm btn-outline-warning">
+      Tablas de posiciones
+    </a>
     <a href="{{ url_for('pools', user_id=user.id) }}" class="btn btn-sm btn-outline-primary">
       Mis ligas
     </a>
@@ -19,7 +15,7 @@
       Cambiar de usuario
     </a>
   </div>
-</div>
+
 
 
   <!-- Panel de progreso -->
