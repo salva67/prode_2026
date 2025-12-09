@@ -74,7 +74,7 @@ def init_db():
     cur.execute("PRAGMA table_info(users);")
     cols = [row["name"] for row in cur.fetchall()]
     if "password_hash" not in cols:
-    cur.execute("ALTER TABLE users ADD COLUMN password_hash TEXT;")
+        cur.execute("ALTER TABLE users ADD COLUMN password_hash TEXT;")
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS matches (
