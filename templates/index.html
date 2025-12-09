@@ -70,4 +70,33 @@
       {% endif %}
     </div>
   </div>
+  <form method="post" class="card shadow-soft p-3 mb-3">
+  <div class="mb-3">
+    <label for="name" class="form-label">Nombre de usuario</label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      class="form-control"
+      placeholder="Ej: Salva"
+      required
+    >
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Contraseña</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      class="form-control"
+      placeholder="Elegí una contraseña"
+      required
+    >
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100">
+    Entrar / Registrarse
+  </button>
+</form>
 {% endblock %}

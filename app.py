@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import sqlite3
 import os
 import csv
@@ -15,7 +17,7 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "prode.db")
 FIXTURE_CSV = os.path.join(BASE_DIR, "fixture_2026.csv")
-
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-cambialo-despues")
 def get_db_connection():
     """
     Abre (o crea) el archivo prode.db en la misma carpeta que app.py
@@ -62,11 +64,17 @@ def init_db():
     cur = conn.cursor()
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id   INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE
+    CREATE TABLE IF NOT EXISTS users (
+        id            INTEGER PRIMARY KEY AUTOINCREMENT,
+        name          TEXT NOT NULL UNIQUE,
+            password_hash TEXT
         );
     """)
+    # Asegurar que exista la columna password_hash (para DBs viejas)
+    cur.execute("PRAGMA table_info(users);")
+    cols = [row["name"] for row in cur.fetchall()]
+    if "password_hash" not in cols:
+    cur.execute("ALTER TABLE users ADD COLUMN password_hash TEXT;")
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS matches (
@@ -226,8 +234,8 @@ def compute_points(home_pred, away_pred, home_score, away_score):
 def index():
     """
     Pantalla de inicio:
-      - Listado de usuarios existentes para entrar.
-      - Form para crear usuario nuevo.
+      - Login / registro con nombre + contraseña.
+      - Listado de usuarios existentes.
       - Dashboard con stats básicas.
     """
     conn = get_db_connection()
@@ -235,29 +243,72 @@ def index():
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
-        if name:
-            try:
-                cur.execute("INSERT INTO users (name) VALUES (?);", (name,))
-                conn.commit()
-            except sqlite3.IntegrityError:
-                # Si ya existe el nombre, lo ignoramos y usamos el existente
-                pass
+        password = request.form.get("password", "").strip()
 
-            user = cur.execute("SELECT id, name FROM users WHERE name = ?;", (name,)).fetchone()
+        if not name or not password:
             conn.close()
-            if user:
-                return redirect(url_for("fixture", user_id=user["id"]))
-        conn.close()
-        return redirect(url_for("index"))
+            flash("Nombre y contraseña son obligatorios.", "danger")
+            return redirect(url_for("index"))
 
+        # Buscamos si el usuario ya existe
+        user = cur.execute(
+            "SELECT id, name, password_hash FROM users WHERE name = ?;",
+            (name,)
+        ).fetchone()
+
+        # Caso 1: usuario NO existe → lo creamos
+        if not user:
+            pwd_hash = generate_password_hash(password)
+            cur.execute(
+                "INSERT INTO users (name, password_hash) VALUES (?, ?);",
+                (name, pwd_hash)
+            )
+            conn.commit()
+            user_id = cur.lastrowid
+            conn.close()
+
+            session["user_id"] = user_id
+            session["user_name"] = name
+            flash("Usuario creado y logueado ✅", "success")
+            return redirect(url_for("fixture", user_id=user_id))
+
+        # Caso 2: usuario existe pero sin contraseña (legacy)
+        if user["password_hash"] is None:
+            pwd_hash = generate_password_hash(password)
+            cur.execute(
+                "UPDATE users SET password_hash = ? WHERE id = ?;",
+                (pwd_hash, user["id"])
+            )
+            conn.commit()
+            conn.close()
+
+            session["user_id"] = user["id"]
+            session["user_name"] = user["name"]
+            flash("Contraseña configurada y sesión iniciada ✅", "success")
+            return redirect(url_for("fixture", user_id=user["id"]))
+
+        # Caso 3: usuario existe con contraseña → validar
+        if not check_password_hash(user["password_hash"], password):
+            conn.close()
+            flash("Contraseña incorrecta.", "danger")
+            return redirect(url_for("index"))
+
+        # Login OK
+        conn.close()
+        session["user_id"] = user["id"]
+        session["user_name"] = user["name"]
+        flash(f"Bienvenido/a, {user['name']} 👋", "success")
+        return redirect(url_for("fixture", user_id=user["id"]))
+
+    # GET: mostramos lista de usuarios + stats
     users = cur.execute("SELECT id, name FROM users ORDER BY name;").fetchall()
 
     stats = cur.execute(
         """
         SELECT
-          (SELECT COUNT(*) FROM users)            AS n_users,
-          (SELECT COUNT(*) FROM matches)          AS n_matches,
-          (SELECT COUNT(*) FROM predictions)      AS n_predictions
+          (SELECT COUNT(*) FROM users)       AS n_users,
+          (SELECT COUNT(*) FROM matches)     AS n_matches,
+          (SELECT COUNT(*) FROM predictions) AS n_predictions
         """
     ).fetchone()
 
@@ -352,7 +403,11 @@ def fixture():
 
     return render_template("fixture.html", user=user, matches=matches, stats=stats)
 
-
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Sesión cerrada.", "info")
+    return redirect(url_for("index"))
 
 @app.route("/predict/<int:match_id>", methods=["GET", "POST"])
 def predict(match_id):
